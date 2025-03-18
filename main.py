@@ -1,7 +1,14 @@
+from numpy.ma.core import append
+
 goal_puzzle = [[1, 2, 3, 4],
                [5, 6, 7, 8],
                [9, 10, 11, 12],
                [13, 14, 15, 0]]
+
+
+def print_table(table):
+    for row in table:
+        print(row)
 
 
 def get_possible_moves(puzzle):
@@ -18,11 +25,11 @@ def get_possible_moves(puzzle):
     if col < 3:
         possible_moves["R"] = (row, col + 1)  # Can move right?
 
-    print(list(possible_moves.keys()))
-    return possible_moves
+    return list(possible_moves.keys())
 
 
-def do_the_move(moveSymbol, puzzle):
+def do_the_move(moveSymbol, og_puzzle):
+    puzzle = og_puzzle
     row, col = find_zero(puzzle)
 
     if moveSymbol == "U":
@@ -54,13 +61,24 @@ def bfs(puzzle):
 
     nest_level = 0
     tab_of_levels = list()
-    tab_of_levels.append(puzzle)
-    tab_of_levels.append(puzzle)
+    tab_of_levels.append(list(puzzle))
     print(tab_of_levels)
 
-    while puzzle != goal_puzzle and nest_level < 5:
+    while nest_level < 5:
         nest_level += 1
         actual_level = list()
+        possible_moves = get_possible_moves(puzzle)
+        print(possible_moves)
+        for move in possible_moves:
+            x = do_the_move(move, puzzle)
+            print_table(x)
+            print("\n")
+            actual_level.append(x)
+
+        possible_moves.clear()
+        for p in actual_level:
+            if p == goal_puzzle:
+                return p
 
 
 if __name__ == '__main__':
@@ -69,4 +87,5 @@ if __name__ == '__main__':
                        [9, 10, 11, 12],
                        [13, 14, 0, 15]]
 
-    bfs(shuffled_puzzle)
+    result = bfs(shuffled_puzzle)
+    print(result)
