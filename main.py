@@ -1,4 +1,5 @@
-from numpy.ma.core import append
+import copy
+from collections import deque
 
 goal_puzzle = [[1, 2, 3, 4],
                [5, 6, 7, 8],
@@ -29,16 +30,16 @@ def get_possible_moves(puzzle):
 
 
 def do_the_move(moveSymbol, og_puzzle):
-    puzzle = og_puzzle
+    puzzle = copy.deepcopy(og_puzzle)
     row, col = find_zero(puzzle)
 
     if moveSymbol == "U":
         puzzle[row][col], puzzle[row - 1][col] = puzzle[row - 1][col], puzzle[row][col]
-    if moveSymbol == "D":
+    elif moveSymbol == "D":
         puzzle[row][col], puzzle[row + 1][col] = puzzle[row + 1][col], puzzle[row][col]
-    if moveSymbol == "L":
+    elif moveSymbol == "L":
         puzzle[row][col], puzzle[row][col - 1] = puzzle[row][col - 1], puzzle[row][col]
-    if moveSymbol == "R":
+    elif moveSymbol == "R":
         puzzle[row][col], puzzle[row][col + 1] = puzzle[row][col + 1], puzzle[row][col]
 
     return puzzle
@@ -59,33 +60,28 @@ def bfs(puzzle):
     if puzzle == goal_puzzle:
         return puzzle
 
-    nest_level = 0
-    tab_of_levels = list()
-    tab_of_levels.append(list(puzzle))
-    print(tab_of_levels)
+    queue = deque()
+    queue.append(puzzle)
 
-    while nest_level < 5:
-        nest_level += 1
-        actual_level = list()
-        possible_moves = get_possible_moves(puzzle)
-        print(possible_moves)
-        for move in possible_moves:
-            x = do_the_move(move, puzzle)
-            print_table(x)
-            print("\n")
-            actual_level.append(x)
-
-        possible_moves.clear()
-        for p in actual_level:
-            if p == goal_puzzle:
-                return p
+    for nest_level in range(0, 5):
+        queue_temp = deque()
+        for person in queue:
+            copy_person = copy.deepcopy(person)
+            moves = get_possible_moves(copy_person)
+            for move in moves:
+                new_puzzle = do_the_move(move, copy_person)
+                queue_temp.append(new_puzzle) # Here is the queue problem
+                if new_puzzle == goal_puzzle:
+                    return new_puzzle
+            moves.clear()
+        queue = queue_temp
 
 
 if __name__ == '__main__':
     shuffled_puzzle = [[1, 2, 3, 4],
-                       [5, 6, 7, 8],
-                       [9, 10, 11, 12],
-                       [13, 14, 0, 15]]
+                       [5, 6, 0, 8],
+                       [9, 10, 7, 12],
+                       [13, 14, 11, 15]]
 
     result = bfs(shuffled_puzzle)
     print(result)
