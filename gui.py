@@ -105,7 +105,7 @@ class PuzzleGUI:
         self.update_buttons()
 
     def solve(self):
-        solution = puzzle.bfs(self.board)
+        solution = puzzle.bfs(self.board) # TUTAJ PODMIENIAMY ALGORYTM
         if solution:
             self.board = solution
             self.update_buttons()

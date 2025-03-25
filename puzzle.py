@@ -45,18 +45,24 @@ def do_the_move(move, puzzle):
         new_puzzle[row][col], new_puzzle[row][col + 1] = new_puzzle[row][col + 1], new_puzzle[row][col]
     return new_puzzle
 
-def bfs(puzzle, max_depth=5):
+def bfs(puzzle):
     if puzzle == goal_puzzle:
         return puzzle
     queue = deque([puzzle])
-    for level in range(max_depth):
-        new_queue = deque()
-        while queue:
-            current = queue.popleft()
-            for move in get_possible_moves(current):
-                new_state = do_the_move(move, current)
-                if new_state == goal_puzzle:
-                    return new_state
-                new_queue.append(new_state)
-        queue = new_queue
+    while queue:
+        current = queue.popleft()
+        for move in get_possible_moves(current):
+            new_state = do_the_move(move, current)
+            if new_state == goal_puzzle:
+                return new_state
+            queue.append(new_state)
     return None
+
+shuffled_puzzle = [
+    [1, 2, 3, 4],
+    [5, 0, 6, 8],
+    [9, 10, 7, 12],
+    [13, 14, 11, 15]
+]
+
+print(bfs(shuffled_puzzle))
