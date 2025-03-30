@@ -1,7 +1,14 @@
-from gui import PuzzleGUI
-import tkinter as tk
+import solver
 
 if __name__ == "__main__":
-    root = tk.Tk()
-    gui = PuzzleGUI(root)
-    root.mainloop()
+    shuffled_puzzle = [
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
+        [0, 10, 11, 12],
+        [9, 13, 14, 15]
+    ]
+
+    order = ["L", "D", "R", "U"]
+
+    print(solver.bfs(shuffled_puzzle, order))
+    print(solver.dfs(shuffled_puzzle, order, 20))

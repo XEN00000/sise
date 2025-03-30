@@ -1,7 +1,7 @@
 import tkinter as tk
 import random
 import copy
-import puzzle  # Importujemy logikę układanki
+import solver  # Importujemy logikę układanki
 
 
 class PuzzleGUI:
@@ -63,7 +63,7 @@ class PuzzleGUI:
         #self.move_label.config(text=f"Liczba ruchów: {self.move_count}")
         misplaced = self.count_misplaced()
         self.misplaced_label.config(text=f"Pomieszane elementy: {misplaced}")
-        if misplaced == 5:
+        if misplaced >= 5:
             self.shuffle_button.config(state=tk.DISABLED)
         else:
             self.shuffle_button.config(state=tk.NORMAL)
@@ -105,7 +105,7 @@ class PuzzleGUI:
         self.update_buttons()
 
     def solve(self):
-        solution = puzzle.bfs(self.board) # TUTAJ PODMIENIAMY ALGORYTM
+        solution = puzzle.bfs(self.board,  ["L", "D", "R", "U"]) # TUTAJ PODMIENIAMY ALGORYTM
         if solution:
             self.board = solution
             self.update_buttons()
