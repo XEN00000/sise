@@ -12,3 +12,4 @@ if __name__ == "__main__":
 
     print(solver.bfs(shuffled_puzzle, order))
     print(solver.dfs(shuffled_puzzle, order, 20))
+    print(solver.a_star(shuffled_puzzle, "hamm"))

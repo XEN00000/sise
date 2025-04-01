@@ -6,6 +6,7 @@
 # -czas trwania procesu obliczeniowego.
 
 import copy
+import heapq
 import time
 from collections import deque
 
@@ -16,6 +17,11 @@ goal_puzzle = [
     [9, 10, 11, 12],
     [13, 14, 15, 0]
 ]
+
+goal_positions = {}
+for i, row in enumerate(goal_puzzle):
+    for j, tile in enumerate(row):
+        goal_positions[tile] = (i, j)
 
 
 def print_table(table):
@@ -63,7 +69,7 @@ def bfs(puzzle, move_order):
 
     if puzzle == goal_puzzle:
         end_time = time.time()
-        #elapsed = round(end_time - start_time, 6)
+        # elapsed = round(end_time - start_time, 6)
         elapsed = end_time - start_time
         return puzzle, [], 0, 1, 0, 1, elapsed
 
@@ -87,14 +93,14 @@ def bfs(puzzle, move_order):
 
             if new_state == goal_puzzle:
                 end_time = time.time()
-                #elapsed = round(end_time - start_time, 6)
+                # elapsed = round(end_time - start_time, 6)
                 elapsed = end_time - start_time
                 return new_state, new_path, len(new_path), visited_states, processed_states, max_depth_reached, elapsed
 
             queue.append((new_state, new_path))
 
     end_time = time.time()
-    #elapsed = round(end_time - start_time, 6)
+    # elapsed = round(end_time - start_time, 6)
     elapsed = end_time - start_time
     return None, None, None, visited_states, processed_states, max_depth_reached, elapsed
 
@@ -104,7 +110,7 @@ def dfs(puzzle, move_order, max_depth):
 
     if puzzle == goal_puzzle:
         end_time = time.time()
-        #elapsed = round(end_time - start_time, 6)
+        # elapsed = round(end_time - start_time, 6)
         elapsed = end_time - start_time
         return puzzle, [], 0, 1, 0, 1, elapsed
 
@@ -112,7 +118,6 @@ def dfs(puzzle, move_order, max_depth):
     visited_states = 0
     processed_states = 0
     max_depth_reached = 1
-
 
     while stack:
         current, path = stack.pop()
@@ -133,17 +138,89 @@ def dfs(puzzle, move_order, max_depth):
 
             if new_state == goal_puzzle:
                 end_time = time.time()
-                #elapsed = round(end_time - start_time, 6)
+                # elapsed = round(end_time - start_time, 6)
                 elapsed = end_time - start_time
                 return new_state, new_path, len(new_path), visited_states, processed_states, max_depth_reached, elapsed
 
             stack.append((new_state, new_path))
 
     end_time = time.time()
-    #elapsed = round(end_time - start_time, 6)
+    # elapsed = round(end_time - start_time, 6)
     elapsed = end_time - start_time
     return None, None, None, visited_states, processed_states, max_depth_reached, elapsed
 
 
-def a_star():
-    pass
+def manhattan_distance(puzzle):
+    distance = 0
+    for i, row in enumerate(puzzle):
+        for j, tile in enumerate(row):
+            if tile != 0:
+                goal_i, goal_j = goal_positions[tile]
+                distance += abs(i - goal_i) + abs(j - goal_j)
+    return distance
+
+
+def hamming_distance(puzzle):
+    distance = 0
+    for i, row in enumerate(puzzle):
+        for j, tile in enumerate(row):
+            if tile != 0 and tile != goal_puzzle[i][j]:
+                distance += 1
+    return distance
+
+
+def a_star(puzzle, heuristic='manh'):
+    start_time = time.time()
+
+    if puzzle == goal_puzzle:
+        end_time = time.time()
+        elapsed = round(end_time - start_time, 6)
+        return puzzle, [], 0, 1, 0, 1, elapsed
+
+    if heuristic == 'manh':
+        h = manhattan_distance(puzzle)
+    elif heuristic == 'hamm':
+        h = hamming_distance(puzzle)
+    else:
+        raise ValueError("Unknown heuristic format: {}. Use 'manh' or 'hamm'".format(heuristic))
+
+    start_node = (h, 0, puzzle, [])
+    frontier = []
+    heapq.heappush(frontier, start_node)
+
+    visited = {tuple(tuple(row) for row in puzzle): 0}
+
+    visited_states = 0
+    processed_states = 0
+    max_depth_reached = 1
+
+    while frontier:
+        priority, cost, current, path = heapq.heappop(frontier)
+        visited_states += 1
+
+        if current == goal_puzzle:
+            end_time = time.time()
+            elapsed = round(end_time - start_time, 6)
+            return current, path, len(path), visited_states, processed_states, max_depth_reached, elapsed
+
+        for move in get_possible_moves(current):
+            new_state = do_the_move(move, current)
+            new_path = path + [move]
+            processed_states += 1
+            max_depth_reached = max(max_depth_reached, len(new_path))
+            new_cost = cost + 1
+
+            if heuristic == 'manh':
+                h_new = manhattan_distance(new_state)
+            if heuristic == 'hamm':
+                h_new = hamming_distance(new_state)
+            new_priority = new_cost + h_new
+
+            state_tuple = tuple(tuple(row) for row in new_state)  # hashowanie listy(aktualnego stanu) do tupla(krotki)
+            if state_tuple not in visited or visited[state_tuple] > new_cost:
+                visited[state_tuple] = new_cost  # nadpisujemy koszt a nie tupla
+                heapq.heappush(frontier, (new_priority, new_cost, new_state, new_path))
+
+    end_time = time.time()
+    elapsed = round(end_time - start_time, 6)
+    return None, None, None, visited_states, processed_states, max_depth_reached, elapsed
