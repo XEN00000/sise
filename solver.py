@@ -69,8 +69,7 @@ def bfs(puzzle, move_order):
 
     if puzzle == goal_puzzle:
         end_time = time.time()
-        # elapsed = round(end_time - start_time, 6)
-        elapsed = end_time - start_time
+        elapsed = round(end_time - start_time, 6)
         return puzzle, [], 0, 1, 0, 1, elapsed
 
     queue = deque([(puzzle, [])])
@@ -93,15 +92,13 @@ def bfs(puzzle, move_order):
 
             if new_state == goal_puzzle:
                 end_time = time.time()
-                # elapsed = round(end_time - start_time, 6)
-                elapsed = end_time - start_time
+                elapsed = round(end_time - start_time, 3)
                 return new_state, new_path, len(new_path), visited_states, processed_states, max_depth_reached, elapsed
 
             queue.append((new_state, new_path))
 
     end_time = time.time()
-    # elapsed = round(end_time - start_time, 6)
-    elapsed = end_time - start_time
+    elapsed = round(end_time - start_time, 3)
     return None, None, None, visited_states, processed_states, max_depth_reached, elapsed
 
 
@@ -110,8 +107,7 @@ def dfs(puzzle, move_order, max_depth):
 
     if puzzle == goal_puzzle:
         end_time = time.time()
-        # elapsed = round(end_time - start_time, 6)
-        elapsed = end_time - start_time
+        elapsed = round(end_time - start_time, 3)
         return puzzle, [], 0, 1, 0, 1, elapsed
 
     stack = deque([(puzzle, [])])
@@ -138,15 +134,13 @@ def dfs(puzzle, move_order, max_depth):
 
             if new_state == goal_puzzle:
                 end_time = time.time()
-                # elapsed = round(end_time - start_time, 6)
-                elapsed = end_time - start_time
+                elapsed = round(end_time - start_time, 3)
                 return new_state, new_path, len(new_path), visited_states, processed_states, max_depth_reached, elapsed
 
             stack.append((new_state, new_path))
 
     end_time = time.time()
-    # elapsed = round(end_time - start_time, 6)
-    elapsed = end_time - start_time
+    elapsed = round(end_time - start_time, 3)
     return None, None, None, visited_states, processed_states, max_depth_reached, elapsed
 
 
@@ -169,12 +163,12 @@ def hamming_distance(puzzle):
     return distance
 
 
-def a_star(puzzle, heuristic='manh'):
+def a_star(puzzle, heuristic):
     start_time = time.time()
 
     if puzzle == goal_puzzle:
         end_time = time.time()
-        elapsed = round(end_time - start_time, 6)
+        elapsed = round(end_time - start_time, 3)
         return puzzle, [], 0, 1, 0, 1, elapsed
 
     if heuristic == 'manh':
@@ -200,7 +194,7 @@ def a_star(puzzle, heuristic='manh'):
 
         if current == goal_puzzle:
             end_time = time.time()
-            elapsed = round(end_time - start_time, 6)
+            elapsed = round(end_time - start_time, 3)
             return current, path, len(path), visited_states, processed_states, max_depth_reached, elapsed
 
         for move in get_possible_moves(current):
@@ -222,5 +216,5 @@ def a_star(puzzle, heuristic='manh'):
                 heapq.heappush(frontier, (new_priority, new_cost, new_state, new_path))
 
     end_time = time.time()
-    elapsed = round(end_time - start_time, 6)
+    elapsed = round(end_time - start_time, 3)
     return None, None, None, visited_states, processed_states, max_depth_reached, elapsed
