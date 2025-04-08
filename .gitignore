@@ -171,6 +171,12 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-
+# foldery z układankami
 generatedPuzzles
 /generatedPuzzles/.
+
+generatedSolutions
+/generatedSolutions/.
+
+generatedStats
+/generatedStats/.

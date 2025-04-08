@@ -76,26 +76,32 @@ def bfs(puzzle, move_order):
     visited_states = 0
     processed_states = 0
     max_depth_reached = 1
+    visited = set()
 
     while queue:
         current, path = queue.popleft()
-        visited_states += 1
+        processed_states += 1
+
+        if current == goal_puzzle:
+            end_time = time.time()
+            elapsed = round(end_time - start_time, 3)
+            return current, path, len(path), visited_states, processed_states, len(path), elapsed
 
         possible_moves = get_possible_moves(current)
         ordered_moves = [move for move in move_order if move in possible_moves]
 
         for move in ordered_moves:
             new_state = do_the_move(move, current)
-            processed_states += 1
             new_path = path + [move]
-            max_depth_reached = max(max_depth_reached, len(new_path))
 
-            if new_state == goal_puzzle:
-                end_time = time.time()
-                elapsed = round(end_time - start_time, 3)
-                return new_state, new_path, len(new_path), visited_states, processed_states, max_depth_reached, elapsed
+            new_tuple = tuple(tuple(row) for row in new_state)
+            if new_tuple in visited:
+                continue
 
+            visited.add(new_tuple)
             queue.append((new_state, new_path))
+            visited_states += 1
+            max_depth_reached = max(max_depth_reached, len(new_path))
 
     end_time = time.time()
     elapsed = round(end_time - start_time, 3)
@@ -114,28 +120,41 @@ def dfs(puzzle, move_order, max_depth):
     visited_states = 0
     processed_states = 0
     max_depth_reached = 1
+    visited = dict()
 
     while stack:
         current, path = stack.pop()
-        visited_states += 1
+        processed_states += 1
+
+        if current == goal_puzzle:
+            end_time = time.time()
+            elapsed = round(end_time - start_time, 3)
+            return current, path, len(path), visited_states, processed_states, len(path), elapsed
 
         if len(path) >= max_depth:
             continue
+
+        current_depth = len(path)
+        current_tuple = tuple(tuple(row) for row in current)
+        if current_tuple in visited and visited[current_tuple] < current_depth:
+            continue
+        visited[current_tuple] = current_depth
 
         possible_moves = get_possible_moves(current)
         ordered_moves = [move for move in move_order if move in possible_moves]
 
         for move in reversed(ordered_moves):
+            if path and ((move == "L" and path[-1] == "R") or
+                         (move == "R" and path[-1] == "L") or
+                         (move == "U" and path[-1] == "D") or
+                         (move == "D" and path[-1] == "U")):
+                continue
+
             new_state = do_the_move(move, current)
-            processed_states += 1
+            visited_states += 1
 
             new_path = path + [move]
             max_depth_reached = max(max_depth_reached, len(new_path))
-
-            if new_state == goal_puzzle:
-                end_time = time.time()
-                elapsed = round(end_time - start_time, 3)
-                return new_state, new_path, len(new_path), visited_states, processed_states, max_depth_reached, elapsed
 
             stack.append((new_state, new_path))
 
