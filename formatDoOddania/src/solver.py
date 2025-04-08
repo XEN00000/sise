@@ -209,7 +209,7 @@ def a_star(puzzle, heuristic):
 
     while frontier:
         priority, cost, current, path = heapq.heappop(frontier)
-        visited_states += 1
+        processed_states += 1
 
         if current == goal_puzzle:
             end_time = time.time()
@@ -219,7 +219,7 @@ def a_star(puzzle, heuristic):
         for move in get_possible_moves(current):
             new_state = do_the_move(move, current)
             new_path = path + [move]
-            processed_states += 1
+            visited_states += 1
             max_depth_reached = max(max_depth_reached, len(new_path))
             new_cost = cost + 1
 
