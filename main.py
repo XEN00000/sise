@@ -56,7 +56,7 @@ def main(args):
     if algorithm == "bfs":
         result = solver.bfs(puzzle, strategy)
     elif algorithm == "dfs":
-        result = solver.dfs(puzzle, strategy, 7)
+        result = solver.dfs(puzzle, strategy, 20)
     elif algorithm == "astr":
         result = solver.a_star(puzzle, strategy)
     else:

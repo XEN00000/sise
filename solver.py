@@ -85,7 +85,7 @@ def bfs(puzzle, move_order):
         if current == goal_puzzle:
             end_time = time.time()
             elapsed = round(end_time - start_time, 3)
-            return current, path, len(path), visited_states, processed_states, len(path), elapsed
+            return current, path, len(path), visited_states, processed_states, max_depth_reached, elapsed
 
         possible_moves = get_possible_moves(current)
         ordered_moves = [move for move in move_order if move in possible_moves]
@@ -129,9 +129,10 @@ def dfs(puzzle, move_order, max_depth):
         if current == goal_puzzle:
             end_time = time.time()
             elapsed = round(end_time - start_time, 3)
-            return current, path, len(path), visited_states, processed_states, len(path), elapsed
+            return current, path, len(path), visited_states, processed_states, max_depth_reached, elapsed
 
         if len(path) >= max_depth:
+            max_depth_reached = max(max_depth_reached, len(path))
             continue
 
         current_depth = len(path)
