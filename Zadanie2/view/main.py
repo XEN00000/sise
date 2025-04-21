@@ -1,6 +1,7 @@
 from Zadanie2.logic.layer import Layer
 
 if __name__ == "__main__":
+    # test of first neuron
     #neuron = Neuron(3, "Sigmoid", False)
 
     X = [[1, 2, 3, 2.5],
