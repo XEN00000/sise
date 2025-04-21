@@ -1,37 +1,41 @@
 import numpy as np
+from yt_dlp.utils import lowercase_escape
 
 
 class Neuron:
-    def __init__(self, input_number):
-        """
-        W constructor mają być inicjalizowane wszystkie parametry neuronu takie jak:
-        - liczba jego wejść
-        - wagi wejść (można by je trzemać razem z wejściami. np. oznaczone numerami zamknięte w dict)
-        - czy został użyty bias
-        - (jeśli tak to jego wartość)
-        - szybkość uczenia się
-        """
+    def __init__(self, input_number, activation_func, has_bias):
+        self.input_number = input_number
         self.weights = {i: np.random.uniform(-1, 1) for i in range(input_number)}
-        pass
+        self.bias = has_bias
+        if has_bias:
+            self.bias = np.random.uniform(-1, 1)
+        else:
+            self.bias = None
+        self.activation_func = activation_func.lower()
+        self.learning_rate = 0.1
 
-    def take_values(self):
-        """
-        W tej metodzie neuron będzie przyjmował wartości z wejść
-        Co więcej musi wywoływać metodę calculate_insput() aby odrazu było to przeliczane
-        """
-        pass
+    def calculate_output(self, input_values):
+        result = 0
+        if self.bias is None:
+            for value in range(len(input_values)):
+                result += self.weights[value] * input_values[value]
+        return result
 
-    def calculate_output(self):
-        """
-        Tutaj mnożone będą wartośći przekazywane do neuronu przez wagi każdego z wejść.
-        Natępnie będą sumowane i dodawany będzie do nich bias
-        """
-        pass
+    def signum_activation(self, x):
+        return 1 / (1 + np.exp(-x))
 
-    def get_output(self):
-        """
-        Ta funkcja będzie zwracała wynik obliczony przez neuron
-        """
+    def forward_propagation(self, input_values):
+        if len(input_values) != self.input_number:
+            raise Exception("Number of input values does not match the number of neurons")
 
-    def set_weights(self, new_weights):
-        self.weights = new_weights
+        z = self.calculate_output(input_values)
+
+        if self.activation_func == "sigmoid":
+            return self.signum_activation(z)
+        elif self.activation_func == "tanh":
+            return np.tanh(z)
+        elif self.activation_func == "linear":
+            return z
+        else:
+            raise Exception("Unknown activation function")
+
