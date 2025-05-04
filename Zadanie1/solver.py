@@ -34,10 +34,14 @@ def find_zero(puzzle):
         for j, value in enumerate(row):
             if value == 0:
                 return i, j
+    return None, None
 
 
 def get_possible_moves(puzzle):
     row, col = find_zero(puzzle)
+    if row is None or col is None:
+        raise ValueError("No zero found in puzzle")
+
     moves = {}
     if row > 0:
         moves["U"] = (row - 1, col)
@@ -131,8 +135,8 @@ def dfs(puzzle, move_order, max_depth):
             elapsed = round(end_time - start_time, 3)
             return current, path, len(path), visited_states, processed_states, max_depth_reached, elapsed
 
-        if len(path) >= max_depth:
-            max_depth_reached = max(max_depth_reached, len(path))
+        if len(path) == max_depth:
+            max_depth_reached = len(path)
             continue
 
         current_depth = len(path)

@@ -6,6 +6,7 @@ from collections import defaultdict
 STATS_FOLDER = "./generatedStats"
 
 ALGORITHMS = ["bfs", "dfs", "astr"]
+#ALGORITHMS = ["dfs"]
 PERMUTATIONS = ["rdul", "rdlu", "drul", "drlu", "ludr", "lurd", "uldr", "ulrd"]
 HEURISTICS = ["hamm", "manh"]
 

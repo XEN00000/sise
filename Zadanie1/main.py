@@ -1,25 +1,23 @@
-import os
-
 import solver
 import sys
 
 
 def write_stats(filePath, data):
     with open(filePath, 'w') as file:
-        if data[0] is None:
+        if data[2] is None:
             file.write("-1\n")
         else:
-            file.write(f"{data[0]}\n")
+            file.write(f"{data[2]}\n")
 
-        file.write(f"{data[1]}\n")
-        file.write(f"{data[2]}\n")
         file.write(f"{data[3]}\n")
         file.write(f"{data[4]}\n")
+        file.write(f"{data[5]}\n")
+        file.write(f"{data[6]}\n")
 
 
 def write_solution(filePath, data):
     with open(filePath, 'w') as file:
-        if data[1] is None or data[2] is None:
+        if data[0] is None or data[1] is None or data[2] is None:
             file.write("-1\n")
         else:
             file.write(f"{data[2]}\n")
@@ -63,8 +61,8 @@ def main(args):
         print("Nie znaleziono algorytmu")
         return
 
+    write_stats(puzzleStatsFile, result)
     write_solution(puzzleSolFile, result)
-    write_stats(puzzleStatsFile, result[2:])
 
 
 if __name__ == "__main__":
