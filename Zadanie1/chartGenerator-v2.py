@@ -1,10 +1,7 @@
 import os
+import matplotlib.pyplot as plt
 
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.ticker as mtick
-from matplotlib.ticker import LogFormatter
 
 
 def extract_info_from_name(filename):
@@ -34,9 +31,7 @@ def load_stats_from_folder(folder):
                     max_depth = int(lines[3])
                     time_ms = float(lines[4])
                     data.append({
-                        'size': size,
                         'depth': depth,
-                        'control_number': control_number,
                         'algorithm': algo,
                         'variant': variant,
                         'solution_len': solution_len,
@@ -48,123 +43,51 @@ def load_stats_from_folder(folder):
     return pd.DataFrame(data)
 
 
-def plot_metric_over_depth(df, metric, ylabel='Kryterium', main_title=None):
-    depths = sorted(df['depth'].unique())
-    fig, axs = plt.subplots(2, 2, figsize=(10, 7))
-    plt.subplots_adjust(hspace=0.3, wspace=0.3)
-    if main_title:
-        fig.suptitle(main_title, fontsize=16, y=0.98)
+def add_plot(dataframe, axn, title='Tytuł', xlabel='Głębokość', ylabel=None):
+    min_val = dataframe[dataframe > 0].min().min()
+    max_val = dataframe.max().max()
+    use_log = bool((min_val > 0) and (max_val / min_val > 100))
 
-    bar_width = 0.25
+    dataframe.plot(kind='bar', ax=axn, logy=use_log, rot=0)
+    axn.set_title(title)
+    axn.set_xlabel(xlabel)
+    if ylabel is not None:
+        axn.set_ylabel(ylabel)
 
-    # --- Wykres 1: Ogółem BFS/DFS/A* ---
-    ax = axs[0, 0]
-    algos = ['bfs', 'dfs', 'astr']
-    shifts = [-bar_width, 0, bar_width]
-    labels = ['BFS', 'DFS', 'A*']
-    all_values = []
-    for algo, shift, label in zip(algos, shifts, labels):
-        values = [np.mean(df[(df['algorithm'] == algo) & (df['depth'] == d)][metric]) for d in depths]
-        all_values.extend(values)
-        ax.bar(np.array(depths) + shift, values, width=bar_width, label=label)
-    if should_use_log_scale(all_values):
-        ax.set_yscale('log')
-        ax.yaxis.set_major_formatter(LogFormatter(labelOnlyBase=False))
-    else:
-        ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.3f'))
-    ax.set_xticks(depths)
-    ax.set_title("Ogółem")
-    ax.set_xlabel("Głębokość")
-    ax.set_ylabel(ylabel)
-    ax.legend()
 
-    # --- Wykres 2: A* - heurystyki ---
-    ax = axs[0, 1]
-    astr = df[df['algorithm'] == 'astr']
-    variants = ['hamm', 'manh']
-    shifts = [-bar_width / 2, bar_width / 2]
-    labels = ['Hamming', 'Manhattan']
-    all_values = []
-    for variant, shift, label in zip(variants, shifts, labels):
-        values = [np.mean(astr[(astr['variant'] == variant) & (astr['depth'] == d)][metric]) for d in depths]
-        all_values.extend(values)
-        ax.bar(np.array(depths) + shift, values, width=bar_width, label=label)
-    if should_use_log_scale(all_values):
-        ax.set_yscale('log')
-        ax.yaxis.set_major_formatter(LogFormatter(labelOnlyBase=False))
-    else:
-        ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.3f'))
-    ax.set_xticks(depths)
-    ax.set_title("A*")
-    ax.set_xlabel("Głębokość")
-    ax.set_ylabel(ylabel)
-    ax.legend()
+def launch_the_plot(frameOfData, valesType=None, yLabelName='Kryterium'):
+    df_mean = frameOfData.pivot_table(index='depth', columns='algorithm', values=valesType, aggfunc='mean').round()
+    df_mean = df_mean[['bfs', 'dfs', 'astr']]
 
-    # --- Wykres 3: BFS - porządki ---
-    ax = axs[1, 0]
-    bfs = df[df['algorithm'] == 'bfs']
-    variants = sorted(bfs['variant'].unique())
-    width = 0.8 / len(variants)
-    shifts = np.linspace(-0.4, 0.4, len(variants))
-    all_values = []
-    for variant, shift in zip(variants, shifts):
-        values = [np.mean(bfs[(bfs['variant'] == variant) & (bfs['depth'] == d)][metric]) for d in depths]
-        all_values.extend(values)
-        ax.bar(np.array(depths) + shift, values, width=width, label=variant.upper())
-    if should_use_log_scale(all_values):
-        ax.set_yscale('log')
-        ax.yaxis.set_major_formatter(LogFormatter(labelOnlyBase=False))
-    else:
-        ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.3f'))
-    ax.set_xticks(depths)
-    ax.set_title("BFS")
-    ax.set_xlabel("Głębokość")
-    ax.set_ylabel(ylabel)
-    ax.legend(fontsize=8)
+    df_astr = (
+        frameOfData[frameOfData['algorithm'] == 'astr'].pivot_table(index='depth', columns='variant', values=valesType,
+                                                                    aggfunc='mean').round())
+    df_astr = df_astr[['hamm', 'manh']]
 
-    # --- Wykres 4: DFS - porządki ---
-    ax = axs[1, 1]
-    dfs = df[df['algorithm'] == 'dfs']
-    variants = sorted(dfs['variant'].unique())
-    width = 0.8 / len(variants)
-    shifts = np.linspace(-0.4, 0.4, len(variants))
-    all_values = []
-    for variant, shift in zip(variants, shifts):
-        values = [np.mean(dfs[(dfs['variant'] == variant) & (dfs['depth'] == d)][metric]) for d in depths]
-        all_values.extend(values)
-        ax.bar(np.array(depths) + shift, values, width=width, label=variant.upper())
-    if should_use_log_scale(all_values):
-        ax.set_yscale('log')
-        ax.yaxis.set_major_formatter(LogFormatter(labelOnlyBase=False))
-    else:
-        ax.yaxis.set_major_formatter(mtick.FormatStrFormatter('%.3f'))
-    ax.set_xticks(depths)
-    ax.set_title("DFS")
-    ax.set_xlabel("Głębokość")
-    ax.set_ylabel(ylabel)
-    ax.legend(fontsize=8)
+    df_bfs = (
+        frameOfData[frameOfData['algorithm'] == 'bfs'].pivot_table(index='depth', columns='variant', values=valesType,
+                                                                   aggfunc='mean').round())
 
-    plt.tight_layout()
+    df_dfs = (
+        frameOfData[frameOfData['algorithm'] == 'dfs'].pivot_table(index='depth', columns='variant', values=valesType,
+                                                                   aggfunc='mean').round())
+
+    fig, axes = plt.subplots(2, 2, figsize=(16, 12))
+    fig.subplots_adjust(left=0.05, bottom=0.08, right=0.95, top=0.92, wspace=0.1, hspace=0.3)
+    ax1, ax2, ax3, ax4 = axes.flatten()
+
+    add_plot(df_mean, ax1, title='Ogółem', xlabel='Głębokość', ylabel=yLabelName)
+    add_plot(df_astr, ax2, title='A*', xlabel='Głębokość')
+    add_plot(df_bfs, ax3, title='BFS', xlabel='Głębokość', ylabel=yLabelName)
+    add_plot(df_dfs, ax4, title='DFS', xlabel='Głębokość')
+
     plt.show()
-
-
-def should_use_log_scale(values, threshold=100):
-    values = [v for v in values if v > 0]
-    if not values or min(values) == 0:
-        return False
-    return max(values) / min(values) > threshold
 
 
 df = load_stats_from_folder('./generatedStats')
 
-print(df)
-
-# TODO: poprawić etykiety na wykresach. Aktualnie pokazywanie czasu jest nieczytelne i wymaga poprawy
-
-plot_metric_over_depth(df, 'time_ms', ylabel='Czas w sekundach', main_title='Czas działania algorytmu')
-'''
-plot_metric_over_depth(df, 'solution_len', main_title='Długość rozwiązania')
-plot_metric_over_depth(df, 'visited', main_title='Liczba stanów odwiedzonych')
-plot_metric_over_depth(df, 'processed', main_title='Liczba stanów przetworzonych')
-plot_metric_over_depth(df, 'max_depth', main_title='Maksymalna głębokość rekursji')
-'''
+launch_the_plot(df, 'solution_len', 'Długość rozwiązania')
+launch_the_plot(df, 'visited', 'Odwiedzone stany')
+launch_the_plot(df, 'processed', 'Przetworzone stany')
+launch_the_plot(df, 'max_depth', 'Maks. głębokość rekursji')
+launch_the_plot(df, 'time_ms', 'Czas działania [s]')
