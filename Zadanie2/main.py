@@ -44,13 +44,18 @@ def run_train(args):
 
 
 def run_test(args):
-    # 1. Wczytaj dane i sieć
-    test_data = load_dataset(
-        args.dataset, args.input_size, args.output_size, delimiter=args.delimiter
+    # 1. Wczytaj surowe dane i przygotuj je tak samo jak w train
+    raw_inputs, raw_labels = load_dataset(
+        args.dataset,
+        delimiter=args.delimiter,
+        skip_header=False
     )
+    test_data = prepare_dataset(raw_inputs, raw_labels, n_classes=args.output_size)
+
+    # 2. Wczytaj sieć
     net = load_network(args.network_path)
 
-    # 2. Testowanie
+    # 3. Testowanie
     net.test(
         test_data,
         output_file=args.output_file,
