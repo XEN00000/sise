@@ -1,5 +1,4 @@
 import numpy as np
-import dataLoader as dl
 import pickle
 
 from layer import Layer
