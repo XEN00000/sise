@@ -25,7 +25,7 @@ def experiment(use_bias):
               dataset=patterns,
               save_path=None)
     net.train()
-    # Wypisz ukrytą reprezentację
+    # Wypisujemy ukrytą reprezentację
     for x, _ in patterns:
         net.forward(x)
         h = net.activations[1]   # warstwa ukryta
@@ -49,13 +49,12 @@ def benchmark(use_bias):
                   dataset=patterns,
                   save_path=None)
         print(f"\n-- η={lr}, μ={mu} --")
-        net.train()   # w logach zobaczysz, przy której epoce osiąga target_error
+        net.train()   # w logach zobaczymy, przy której epoce osiąga target_error
 
 if __name__ == "__main__":
     # 1) porównujemy bias on/off
     experiment(use_bias=True)
     experiment(use_bias=False)
 
-    # 2) wybierz wersję, która się zbiega, i ją benchmarkuj
-    #    zakładam, że bias=True dał zbieżność:
+    # 2) wybieramy wersję, która się zbiega, i ją benchmarkujemy
     benchmark(use_bias=True)

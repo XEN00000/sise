@@ -3,7 +3,7 @@ import numpy as np
 
 
 def loader(dataset_name='irisset.csv'):
-    # 1. Wczytaj z CSV
+    # 1. Wczytujemy z CSV
     data = []
     with open(dataset_name, newline='') as f:
         reader = csv.reader(f)
@@ -14,7 +14,7 @@ def loader(dataset_name='irisset.csv'):
             label = row[4]
             data.append((features, label))
 
-    # 2. Zamień etykiety na indeksy i one-hot
+    # 2. Zamieniamy etykiety na indeksy i one-hot
     labels = sorted({lab for _, lab in data})
     lab2idx = {lab:i for i,lab in enumerate(labels)}
     n_classes = len(labels)
@@ -37,7 +37,7 @@ def loader(dataset_name='irisset.csv'):
     X_train, Y_train = X[train_idx], Y[train_idx]
     X_test,  Y_test  = X[test_idx],  Y[test_idx]
 
-    # 5. Przygotuj listy (wejście, cel) dla MLP
+    # 5. Listy (wejście, cel) dla MLP
     train_dataset = [(X_train[i], Y_train[i]) for i in range(len(train_idx))]
     test_dataset  = [(X_test[i],  Y_test[i])  for i in range(len(test_idx))]
 
