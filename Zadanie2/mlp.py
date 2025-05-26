@@ -43,6 +43,10 @@ class MLP:
         """
         Uczy sieć metodą backpropagation z uczącym online.
         """
+        if self.log_path:
+            with open(self.log_path, 'w') as f:
+                f.write("epoch,error\n")
+
         for epoch in range(1, self.max_epochs + 1):
             total_error = 0.0
             for x, target in self.dataset:
@@ -64,6 +68,9 @@ class MLP:
             # logowanie
             if epoch % self.log_rate == 0:
                 print(f"Epoch {epoch}: error={avg_error:.6f}")
+                if self.log_path:
+                    with open(self.log_path, 'a') as f:
+                        f.write(f"{epoch},{avg_error:.6f}\n")
             # warunek stopu
             if avg_error <= self.target_error:
                 print(f"Koniec nauki w epoce {epoch}, error={avg_error:.6f}")

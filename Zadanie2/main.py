@@ -19,4 +19,4 @@ net = mlp.MLP(input_number=4,
 
 net.train()
 
-test.test_the_network(test_dataset, 'irisNet.ntwrk')
+test.test_the_network(test_dataset, 'irisNet.ntwrk', log_path='test_log.csv')
