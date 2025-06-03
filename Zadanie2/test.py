@@ -12,7 +12,7 @@ def test_the_network(dataset, network_path='irisNet.ntwrk', log_path=None):
     # Przygotowanie pliku logu (jeśli podano)
     if log_path:
         f_log = open(log_path, 'w')
-        f_log.write("input,target,prediction,error,hidden_output,output_weights\n") # nagłówek logu
+        f_log.write("input;target;prediction;error;hidden_output;output_weights\n") # nagłówek logu
 
     # Przetwarzanie zbioru testowego
     y_true = []
@@ -28,9 +28,9 @@ def test_the_network(dataset, network_path='irisNet.ntwrk', log_path=None):
         output_weights = loaded_net.layers[-1].W   # zapisanie oczekiwanej klasy
 
         if log_path:
-            f_log.write(f"{x.tolist()},{y.tolist()},{out.tolist()},"  # zapis wejść, oczekiwanych wyjść, wyjść sieci
-                        f"{np.mean(np.abs(error_vec)):.4f},"  # zapis błędu średniego bezwzględnego
-                        f"{hidden_output.tolist()},"  # zapis aktywacji warstwy ukrytej
+            f_log.write(f"{x.tolist()};{y.tolist()};{out.tolist()};"  # zapis wejść, oczekiwanych wyjść, wyjść sieci
+                        f"{np.mean(np.abs(error_vec)):.4f};"  # zapis błędu średniego bezwzględnego
+                        f"{hidden_output.tolist()};"  # zapis aktywacji warstwy ukrytej
                         f"{output_weights.tolist()}\n")  # zapis wag warstwy wyjściowej
 
     # Obliczenie macierzy pomyłek

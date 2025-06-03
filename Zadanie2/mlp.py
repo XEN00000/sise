@@ -82,3 +82,6 @@ class MLP:
         if self.save_path:
             with open(self.save_path, 'wb') as f:
                 pickle.dump(self, f)
+                print(f"Zapisano sieć do pliku: {self.save_path}")
+        else:
+            print("Nie zapisano sieci")
