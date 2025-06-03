@@ -2,6 +2,7 @@ import csv
 import numpy as np
 
 
+#def loader(dataset_name='irisset.csv', shuffled=True, training_set_size=0.7):
 def loader(dataset_name='irisset.csv'):
     # 1. Wczytujemy z CSV
     data = []

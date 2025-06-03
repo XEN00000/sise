@@ -21,6 +21,7 @@ class MLP:
         self.log_path = log_path  # ścieżka do pliku logu
         self.dataset = dataset  # dane treningowe (lista: wejście, oczekiwane wyjście)
         self.save_path = save_path  # ścieżka do zapisu wytrenowanej sieci
+        self.error_history = []
 
         self.layers = []  # lista warstw w sieci
         prev_size = input_number  # rozmiar wejścia dla pierwszej warstwy
@@ -70,6 +71,7 @@ class MLP:
             # logowanie
             if epoch % self.log_rate == 0:
                 print(f"Epoch {epoch}: error={avg_error:.6f}")
+                self.error_history.append(avg_error)
                 if self.log_path:
                     with open(self.log_path, 'a') as f:
                         f.write(f"{epoch},{avg_error:.6f}\n")
@@ -78,7 +80,11 @@ class MLP:
                 print(f"Koniec nauki w epoce {epoch}, error={avg_error:.6f}")
                 break
 
+    def save(self):
         # opcjonalnie: zapis sieci
-        if self.save_path:
+        if self.save_path is not None:
             with open(self.save_path, 'wb') as f:
                 pickle.dump(self, f)
+                print(f"Sieć zapisana do: {self.save_path}")
+        else:
+            print("Nie można zapisać sieci")
