@@ -13,7 +13,7 @@ df = pd.read_csv('data.csv', sep=';')
 
 # Przekształcenie kolumny 'location' na zmienne binarne (one-hot encoding)
 # Dzięki temu model może lepiej rozróżnić kategorie: center, suburbs, outskirts
-# drop_first = True usuwa jedną kolumnę, aby uniknąć problemu kolineacji
+# drop_first = True usuwa jedną kolumnę, aby uniknąć problemu ang. Dummy variable trap
 df = pd.get_dummies(df, columns=['location'], drop_first=True)
 
 # Konwersja kolumny 'has_elevator' na typ całkowity (0 lub 1)
@@ -116,4 +116,26 @@ plt.legend(loc='best')
 plt.grid(True)
 plt.tight_layout()
 # Wyświetlamy gotowy wykres
+plt.show()
+
+# -------------------------------------------------------------
+# 10. Rysowanie wytrenowanego drzewa decyzyjnego
+# -------------------------------------------------------------
+from sklearn.tree import plot_tree
+
+# Opcjonalnie: zwiększ rozmiar rysunku, żeby był czytelny
+plt.figure(figsize=(20, 10))
+plot_tree(
+    model,
+    feature_names=X.columns,
+    filled=True,
+    rounded=True,
+    label='root',        # tylko etykieta z warunkiem w węźle
+    impurity=False,      # usuwa impurity (mse)
+    proportion=True,     # wartości będą liczbą procentową próbek
+    fontsize=5,
+    max_depth=5
+)
+
+plt.title("Wytrenowane drzewo decyzyjne (DecisionTreeRegressor)")
 plt.show()
