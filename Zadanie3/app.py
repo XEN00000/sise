@@ -86,10 +86,10 @@ train_sizes, train_scores, test_scores = learning_curve(
     estimator=model,
     X=X,
     y=y,
-    cv=5,   # liczba fałd walidacji krzyżowej
-    train_sizes=np.linspace(0.1, 1.0, 10),
+    cv=5,   # liczba fałd walidacji krzyżowej || 5-krotna walidacja krzyżowa
+    train_sizes=np.linspace(0.1, 1.0, 10), # 10 punktów od 10% do 100% danych
     scoring='r2',   # oceniamy za pomocą współczynnika R²
-    n_jobs=-1   # użycie wszystkich dostępnych rdzeni
+    n_jobs=-1   # użycie wszystkich dostępnych rdzeni procesora (-1 oznacza użycie wszystkich)
 )
 
 # Obliczanie średnich i odchyleń standardowych wyników
